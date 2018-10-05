@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import CalculatorBody from './components/CalculatorBody';
 import { Calculator } from './components';
 
 const containerStyle = {
@@ -16,7 +15,6 @@ class App extends Component {
     return (
       <div className="App" style={containerStyle}>
         <Calculator />
-        <CalculatorBody />
       </div>
     );
   }
