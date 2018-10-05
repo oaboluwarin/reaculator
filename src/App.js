@@ -1,12 +1,21 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import CalculatorBody from './components/CalculatorBody';
+import { Calculator } from './components';
+
+const containerStyle = {
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingTop: '10%',
+  width: '25%',
+  margin: '0 auto'
+}
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <div className="App" style={containerStyle}>
+        <Calculator />
         <CalculatorBody />
       </div>
     );

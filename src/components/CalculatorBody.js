@@ -4,7 +4,7 @@ import '../App.css';
 class CalculatorBody extends Component {
   render() {
     return (
-      <div className="wrapper">
+      <div>
         <div className="row">
           <div className="col">
             <p className="button border-left">C</p>
