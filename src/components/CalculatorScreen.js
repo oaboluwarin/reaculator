@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
+import '../App.css';
 
 const inputFieldStyle = {
   height: '70px',
-  width: '350px',
   fontSize: '50px',
   color: 'white',
+  width: '98%',
   backgroundColor: '#6b6b6b',
   textAlign: 'right',
 }
 
 export default class CalculatorScreen extends Component {
   state = {
-    value: ''
+    value: 0
   }
 
   validateInput = (value) => {
@@ -20,8 +21,10 @@ export default class CalculatorScreen extends Component {
 
   handleInputChange = (event) => {
     event.persist();
-    event.preventDefault();
-    const inputValue = event.target.value;
+    let inputValue = event.target.value;
+    if(inputValue.startsWith('0')) {
+      inputValue = inputValue.substring(1);
+    }
     if (this.validateInput(inputValue)) {
       this.setState(() => ({ value: inputValue }));
     } else {
@@ -29,19 +32,30 @@ export default class CalculatorScreen extends Component {
     }
   }
 
+  handleKeyPress = (event) => {
+    const { target: { value }, keyCode } = event;
+    if (value.length === 1 && keyCode === 8) {
+      this.setState(() => ({ value: 0 }));
+    }
+  }
+
   render() {
     const {
       state: { value },
       handleInputChange,
+      handleKeyPress,
     } = this;
 
     return (
-      <input
-        type="text"
-        value={value}
-        style={inputFieldStyle}
-        onChange={handleInputChange}
-      />
+      <div className="border">
+        <input
+          type="text"
+          value={value}
+          style={inputFieldStyle}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
+        />
+      </div>
     )
   }
 }
