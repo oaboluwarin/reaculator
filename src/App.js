@@ -5,7 +5,9 @@ import { Calculator } from './components';
 const containerStyle = {
   justifyContent: 'center',
   alignItems: 'center',
-  marginTop: 200
+  paddingTop: '10%',
+  width: '25%',
+  margin: '0 auto'
 }
 
 class App extends Component {

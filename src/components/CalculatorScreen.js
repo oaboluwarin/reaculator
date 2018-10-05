@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import '../App.css';
 
 const inputFieldStyle = {
   height: '70px',
-  width: '350px',
   fontSize: '50px',
   color: 'white',
+  width: '98%',
   backgroundColor: '#6b6b6b',
   textAlign: 'right',
 }
@@ -36,12 +37,14 @@ export default class CalculatorScreen extends Component {
     } = this;
 
     return (
-      <input
-        type="text"
-        value={value}
-        style={inputFieldStyle}
-        onChange={handleInputChange}
-      />
+      <div className="border">
+        <input
+          type="text"
+          value={value}
+          style={inputFieldStyle}
+          onChange={handleInputChange}
+        />
+      </div>
     )
   }
 }
