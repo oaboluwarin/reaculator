@@ -14,18 +14,18 @@ export default class CalculatorScreen extends Component {
     value: ''
   }
 
-  preventLetterInput = (value) => {
-    return /[a-z]/i.test(value);
+  validateInput = (value) => {
+    return /^[0-9]*\.?[0-9]+$/.test(value);
   }
 
   handleInputChange = (event) => {
     event.persist();
     event.preventDefault();
     const inputValue = event.target.value;
-    if (this.preventLetterInput(inputValue)) {
-      return;
-    } else {
+    if (this.validateInput(inputValue)) {
       this.setState(() => ({ value: inputValue }));
+    } else {
+      return;
     }
   }
 
