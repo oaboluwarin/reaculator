@@ -15,26 +15,18 @@ export default class CalculatorScreen extends Component {
     value: 0
   }
 
-  validateInput = (value) => {
-    return /^[0-9]*\.?[0-9]+$/.test(value);
-  }
+  validateInput = value => /^(\d*\.)?\d*$/.test(value);
 
   handleInputChange = (event) => {
     event.persist();
     let inputValue = event.target.value;
-    if(inputValue.startsWith('0')) {
+    if(inputValue.startsWith('0') && !inputValue.includes(".")) {
       inputValue = inputValue.substring(1);
     }
     if (this.validateInput(inputValue)) {
       this.setState(() => ({ value: inputValue }));
-    } else {
-      return;
     }
-  }
-
-  handleKeyPress = (event) => {
-    const { target: { value }, keyCode } = event;
-    if (value.length === 1 && keyCode === 8) {
+    if(!inputValue) {
       this.setState(() => ({ value: 0 }));
     }
   }
@@ -43,7 +35,6 @@ export default class CalculatorScreen extends Component {
     const {
       state: { value },
       handleInputChange,
-      handleKeyPress,
     } = this;
 
     return (
@@ -53,7 +44,6 @@ export default class CalculatorScreen extends Component {
           value={value}
           style={inputFieldStyle}
           onChange={handleInputChange}
-          onKeyDown={handleKeyPress}
         />
       </div>
     )
