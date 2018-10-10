@@ -3,11 +3,13 @@ import { CalculatorScreen, CalculatorBody } from '.';
 
 const initialState = {
   onScreenInput: 0,
-  inputHolder: [0, '+', 0],
+  inputHolder: [0, '', 0],
   computationResult: 0,
   inputOnOpKeyPress: 0,
   signClicked: false
 }
+
+const valueIsOperator = value => /^[-+*\/]$/.test(value); // eslint-disable-line
 
 class Calculator extends Component {
   state = {...initialState}
@@ -20,8 +22,17 @@ class Calculator extends Component {
       if (!isNaN(inputValue)) {
         const signClickedValue = this.state.onScreenInput + inputValue;
         this.handleSignClicked(signClickedValue, inputValue);
-      } else {
-        this.addInput();
+      }
+      else {
+        this.makeComputation();
+        this.keepValues(inputValue);
+        const { inputHolder, computationResult } = this.state;
+        inputHolder[0] = computationResult;
+        inputHolder[2] = 0;
+        this.setState((state) => ({
+          onScreenInput: state.computationResult,
+          inputHolder
+        }))
       }
     }
 
@@ -29,7 +40,8 @@ class Calculator extends Component {
       if (!isNaN(inputValue)) {
         this.handleSignClicked(inputValue, inputValue.slice(-1));
       } else {
-        this.addInput();
+        this.keepValues(inputValue);
+        this.makeComputation();
       }
     } else if (event.target.value === '') {
       this.resetInput();
@@ -56,28 +68,51 @@ class Calculator extends Component {
   keepValues = (value) => {
     const { inputHolder, computationResult } = this.state;
     inputHolder[0] = computationResult;
-    if (isNaN(value)) {
-      inputHolder[1] = value;
-    } else {
+    const lastCharacterOfValue = value.slice(-1);
+    if (valueIsOperator(lastCharacterOfValue)) {
+      inputHolder[1] = lastCharacterOfValue;
+    }
+    if(!isNaN(value)) {
       inputHolder[2] = Number(value);
     }
+    console.log('00000',inputHolder)
     this.setState(() => ({ inputHolder }));
   }
 
-  addInput = () => {
+  makeComputation = () => {
     const { inputHolder, computationResult } = this.state;
+    let operationResult = 0;
+    console.log('=====>', inputHolder[1]);
+    switch(inputHolder[1]) {
+      case('+'):
+      default:
+        operationResult = Number(computationResult) + Number(inputHolder[2]);
+        break;
+      case('-'):
+        if(computationResult){
+          operationResult = Number(computationResult) - Number(inputHolder[2]);
+        }
+        else {
+          operationResult = Number(inputHolder[2])
+        }
+        break;
+      case('/'):
+        operationResult = Number(computationResult) / Number(inputHolder[2]);
+        break;
+      case('*'):
+        operationResult = Number(computationResult) * Number(inputHolder[2]);
+        break;
+    }
     this.setState(() => {
-      const additionResult = Number(computationResult) + Number(inputHolder[2]);
       return {
         signClicked: true,
-        onScreenInput: additionResult,
-        computationResult: additionResult
+        // onScreenInput: operationResult,
+        computationResult: operationResult
       }
     })
   }
 
-  onEqualSignPress = () => {
-    this.addInput();
+  handleEqualitySignPress = async () => {
     this.setState((state) => ({ onScreenInput: state.computationResult }));
   }
 
@@ -88,10 +123,10 @@ class Calculator extends Component {
   render() {
     const {
       state: { onScreenInput },
+      handleEqualitySignPress,
       handleInputChange,
+      makeComputation,
       resetInput,
-      addInput,
-      onEqualSignPress
     } = this;
 
     return (
@@ -102,8 +137,8 @@ class Calculator extends Component {
         />
         <CalculatorBody
           handleInputChange={handleInputChange}
-          addInput={addInput}
-          onEqualSignPress={onEqualSignPress}
+          makeComputation={makeComputation}
+          handleEqualitySignPress={handleEqualitySignPress}
           resetInput={resetInput}
         />
       </div>

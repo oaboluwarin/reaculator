@@ -4,9 +4,9 @@ import '../App.css';
 class CalculatorBody extends Component {
   render() {
     const {
-      onEqualSignPress,
-      resetInput,
+      handleEqualitySignPress,
       handleInputChange,
+      resetInput,
     } = this.props;
     return (
       <div>
@@ -15,7 +15,7 @@ class CalculatorBody extends Component {
             <p onClick={resetInput} className="button border-left">C</p>
             <p onClick={handleInputChange} className="button border-left">7</p>
             <p onClick={handleInputChange} className="button border-left">4</p>
-            <p className="button border-left">1</p>
+            <p onClick={handleInputChange} className="button border-left">1</p>
           </div>
           <div className="col">
             <p className="button"><span>&#177;</span></p>
@@ -30,17 +30,17 @@ class CalculatorBody extends Component {
             <p onClick={handleInputChange} className="button">3</p>
           </div>
           <div className="col calc">
-            <p className="button"><span>&#247;</span></p>
-            <p className="button">x</p>
-            <p className="button">-</p>
+            <p onClick={handleInputChange} className="button"><span>&#247;</span></p>
+            <p onClick={handleInputChange} className="button">x</p>
+            <p onClick={handleInputChange} className="button">-</p>
             <p onClick={handleInputChange} className="button">+</p>
           </div>
         </div>
         <div className="row">
-          <p className="bottom-layer no-border border-left">0</p>
+          <p onClick={handleInputChange} className="bottom-layer no-border border-left">0</p>
           <p className="bottom-layer"></p>
-          <p className="bottom-layer">.</p>
-          <p onClick={onEqualSignPress} className="bottom-layer bg-yellow">=</p>
+          <p onClick={handleEqualitySignPress} className="bottom-layer">.</p>
+          <p onClick={handleEqualitySignPress} className="bottom-layer bg-yellow">=</p>
         </div>
       </div>
     );

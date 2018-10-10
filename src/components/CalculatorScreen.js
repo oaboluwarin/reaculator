@@ -16,7 +16,6 @@ export default class CalculatorScreen extends Component {
     const {
       props: {
         handleInputChange,
-        handleComputations,
         handleSpecialKeystrokes,
         value
       }
