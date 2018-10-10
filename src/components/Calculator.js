@@ -41,7 +41,7 @@ class Calculator extends Component {
         this.handleSignClicked(inputValue, inputValue.slice(-1));
       } else {
         this.keepValues(inputValue);
-        this.makeComputation();
+        this.handleEqualitySignPress()
       }
     } else if (event.target.value === '') {
       this.resetInput();
@@ -113,7 +113,14 @@ class Calculator extends Component {
   }
 
   handleEqualitySignPress = async () => {
-    this.setState((state) => ({ onScreenInput: state.computationResult }));
+    await this.makeComputation();
+    const { inputHolder, computationResult } = this.state;
+    inputHolder[0] = computationResult;
+    inputHolder[2] = 0;
+    this.setState((state) => ({
+      onScreenInput: state.computationResult,
+      inputHolder
+    }));
   }
 
   resetInput = () => {
