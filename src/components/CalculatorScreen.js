@@ -12,7 +12,8 @@ const inputFieldStyle = {
 
 export default class CalculatorScreen extends Component {
 
-  validateInput = value => /^(\d*\.)?\d*$/.test(value);
+  // validateInput = value => /^(\d*\.)?\d*$/.test(value);
+
 
   // handleInputChange = (event) => {
   //   event.persist();
@@ -30,7 +31,12 @@ export default class CalculatorScreen extends Component {
 
   render() {
     const {
-      props: { handleInputChange, value }
+      props: {
+        handleInputChange,
+        handleComputations,
+        handleSpecialKeystrokes,
+        // value
+      }
     } = this;
 
     return (
@@ -40,6 +46,7 @@ export default class CalculatorScreen extends Component {
           value={this.props.value}
           style={inputFieldStyle}
           onChange={handleInputChange}
+          onKeyUp={handleSpecialKeystrokes}
         />
       </div>
     )

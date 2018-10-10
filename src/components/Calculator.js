@@ -5,25 +5,68 @@ import CalculatorBody from './CalculatorBody';
 class Calculator extends Component {
   state = {
     onScreenInput: 0,
-    inputHolder: [0, 0, 0],
-    computationResult: 0
+    inputHolder: [0, '+', 0],
+    computationResult: 0,
+    inputOnOpKeyPress: 0,
+    signClicked: false
   }
 
   handleInputChange = (event) => {
     event.persist();
-    const currValue = event.target.innerHTML || event.target.value;
 
-    if(!isNaN(currValue)) {
-      this.keepValues(this.state.onScreenInput + currValue)
-      this.setState((state) => ({
-        onScreenInput: Number(state.onScreenInput + currValue)
-      }))
-    } else {
-      this.keepValues(currValue)
+    let inputValue = Number(event.target.value) || event.target.innerHTML;
+    if (event.target.innerHTML) {
+      if (!isNaN(inputValue)) {
+        if (!this.state.signClicked) {
+          this.keepValues(this.state.onScreenInput + inputValue)
+          this.setState(() => ({
+            onScreenInput: Number(this.state.onScreenInput + inputValue),
+          }))
+        }
+        // if (this.state.signClicked) {
+        //   console.log('----111111', inputValue)
+        //   this.keepValues(inputValue)
+        //   this.setState(() => ({
+        //     onScreenInput: Number(inputValue),
+        //     signClicked: false
+        //   }))
+        // }
+      } else {
+        this.keepValues(inputValue)
+        this.addInput()
+      }
     }
-    if (currValue === "+") {
-      this.addInput()
+
+    if (event.target.value) {
+      console.log('TARGETVALUE')
+      if (inputValue && !isNaN(inputValue)) {
+        if (!this.state.signClicked) {
+          console.log('============' , inputValue)
+          this.keepValues(inputValue)
+          this.setState(() => ({
+            onScreenInput: inputValue,
+          }))
+        }
+        // if (this.state.signClicked) {
+        //   console.log('----111111', inputValue)
+        //   this.keepValues(inputValue)
+        //   this.setState(() => ({
+        //     onScreenInput: Number(inputValue),
+        //     signClicked: false
+        //   }))
+        // }
+      } else if (!inputValue) {
+        console.log('do nothing, odebi')
+      } else {
+        this.keepValues(inputValue)
+        this.addInput()
+      }
+    } else if(event.target.value === '') {
+      this.setState(() => ({ onScreenInput: 0 }));
     }
+    // if(!inputValue) {
+    //   this.setState(() => ({ onScreenInput: 0, computationResult: 0 }));
+    // }
   }
 
   keepValues = (value) => {
@@ -39,15 +82,16 @@ class Calculator extends Component {
 
   addInput = () => {
     const { inputHolder, computationResult } = this.state;
-    console.log(inputHolder, computationResult)
+
     this.setState(() => {
-      const additionResult = computationResult + inputHolder[2];
+      const additionResult = Number(computationResult) + Number(inputHolder[2]);
       return {
-        onScreenInput: additionResult,
+        signClicked: true,
+        // onScreenInput: additionResult,
         computationResult: additionResult
       }
     })
-    // this.setState((state) => ({ onScreenInput: state.computationResult }))
+    this.setState((state) => ({ onScreenInput: state.computationResult }))
   }
 
   onEqualSignPress = () => {
@@ -55,10 +99,30 @@ class Calculator extends Component {
     this.setState((state) => ({ onScreenInput: state.computationResult }))
   }
 
+  handleSpecialKeystrokes = (event) => {
+    const { keyCode } = event;
+    if (keyCode === 8) {
+      if (this.state.onScreenInput.length === 1) {
+        this.setState(() => ({
+          onScreenInput: 0
+        }))
+      } else {
+        const newDisplayedInput = String(this.state.onScreenInput).slice(0, -1)
+        console.log(newDisplayedInput, '========')
+        this.setState(() => {
+          return {
+            onScreenInput: newDisplayedInput
+          }
+        })
+      }
+    }
+  }
+
   render() {
     const {
       state: { onScreenInput },
       handleInputChange,
+      handleSpecialKeystrokes,
       addInput,
       onEqualSignPress
     } = this;
@@ -68,7 +132,8 @@ class Calculator extends Component {
         <CalculatorScreen
           value={onScreenInput}
           handleInputChange={handleInputChange}
-          />
+          // handleSpecialKeystrokes={handleSpecialKeystrokes}
+        />
         <CalculatorBody
           handleInputChange={handleInputChange}
           addInput={addInput}
