@@ -5,14 +5,14 @@ class CalculatorBody extends Component {
   render() {
     const {
       onEqualSignPress,
-      addInput,
+      resetInput,
       handleInputChange,
     } = this.props;
     return (
       <div>
         <div className="row">
           <div className="col">
-            <p className="button border-left">C</p>
+            <p onClick={resetInput} className="button border-left">C</p>
             <p onClick={handleInputChange} className="button border-left">7</p>
             <p onClick={handleInputChange} className="button border-left">4</p>
             <p className="button border-left">1</p>
