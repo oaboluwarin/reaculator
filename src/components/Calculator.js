@@ -96,7 +96,6 @@ class Calculator extends Component {
 
     switch(inputHolder[1]) {
       case('+'):
-      default:
         operationResult = Number(computationResult) + Number(inputHolder[2]);
         break;
       case('-'):
@@ -109,6 +108,9 @@ class Calculator extends Component {
       case('*'):
       case('x'):
         computationResult ? operationResult = Number(computationResult) * Number(inputHolder[2]) : operationResult = Number(inputHolder[2]);
+        break;
+      default:
+        operationResult = Number(inputHolder[2]);
         break;
     }
     this.setState(() => {
