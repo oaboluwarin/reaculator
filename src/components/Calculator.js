@@ -137,13 +137,35 @@ class Calculator extends Component {
     this.setState(() => initialState);
   }
 
+  toggleDisplayedInputSign = () => {
+    const { onScreenInput, inputHolder } = this.state;
+    const newScreenInput = (-onScreenInput);
+    inputHolder[2] = newScreenInput
+    this.setState(() => ({
+      onScreenInput: newScreenInput,
+      inputHolder
+    }));
+  }
+
+  convertToPercentage = () => {
+    const { onScreenInput, inputHolder } = this.state;
+    const newScreenInput = onScreenInput / 100;
+    inputHolder[2] = newScreenInput
+    this.setState(() => ({
+      onScreenInput: (onScreenInput / 100),
+      inputHolder
+    }));
+  }
+
   render() {
     const {
       state: { onScreenInput },
+      convertToPercentage,
       handleEqualitySignPress,
       handleInputChange,
       makeComputation,
       resetInput,
+      toggleDisplayedInputSign,
     } = this;
 
     return (
@@ -157,6 +179,8 @@ class Calculator extends Component {
           makeComputation={makeComputation}
           handleEqualitySignPress={handleEqualitySignPress}
           resetInput={resetInput}
+          convertToPercentage={convertToPercentage}
+          toggleDisplayedInputSign={toggleDisplayedInputSign}
         />
       </div>
     );
