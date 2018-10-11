@@ -39,7 +39,7 @@ class CalculatorBody extends Component {
         <div className="row">
           <p onClick={handleInputChange} className="bottom-layer no-border border-left">0</p>
           <p className="bottom-layer"></p>
-          <p onClick={handleEqualitySignPress} className="bottom-layer">.</p>
+          <p onClick={handleInputChange} className="bottom-layer">.</p>
           <p onClick={handleEqualitySignPress} className="bottom-layer bg-yellow">=</p>
         </div>
       </div>

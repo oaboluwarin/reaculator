@@ -5,11 +5,13 @@ const initialState = {
   onScreenInput: 0,
   inputHolder: [0, '', 0],
   computationResult: 0,
-  inputOnOpKeyPress: 0,
-  signClicked: false
+  signClicked: false,
+  equalitySignHasBeenPressed: false,
 }
 
 const valueIsOperator = value => /^[-+÷*x\/]$/.test(value); // eslint-disable-line
+const operatorIsMultDiv = value => /^[÷*x\/]$/.test(value); // eslint-disable-line
+const operatorIsBasic = value => /^[+-]$/.test(value); // eslint-disable-line
 
 class Calculator extends Component {
   state = {...initialState}
@@ -19,17 +21,16 @@ class Calculator extends Component {
 
     let inputValue = event.target.value || event.target.innerHTML;
     if (event.target.innerHTML) {
-      console.log('Division sign', event.target.innerHTML);
       if (!isNaN(inputValue)) {
         const signClickedValue = this.state.onScreenInput + inputValue;
         this.handleSignClicked(signClickedValue, inputValue);
       }
       else {
-        this.makeComputation();
+        this.makeComputation(event.target.innerHTML);
         this.keepValues(inputValue);
         const { inputHolder, computationResult } = this.state;
         inputHolder[0] = computationResult;
-        inputHolder[2] = 0;
+        operatorIsBasic(inputValue) ? inputHolder[2] = 0 : inputHolder[2] = 1;
         this.setState((state) => ({
           onScreenInput: state.computationResult,
           inputHolder
@@ -76,14 +77,23 @@ class Calculator extends Component {
     if(!isNaN(value)) {
       inputHolder[2] = Number(value);
     }
-    // console.log('00000',inputHolder)
     this.setState(() => ({ inputHolder }));
   }
 
-  makeComputation = () => {
-    const { inputHolder, computationResult } = this.state;
+  makeComputation = (currentOperator) => {
     let operationResult = 0;
-    console.log('=====>', inputHolder[1]);
+    if (currentOperator !== '=' && this.state.equalitySignHasBeenPressed) {
+      const { inputHolder } = this.state;
+      if (operatorIsMultDiv(currentOperator)) {
+        inputHolder[2] = 1;
+      } else if (operatorIsBasic(currentOperator)) {
+        inputHolder[2] = 0;
+      }
+      this.setState(() => ({ inputHolder }))
+    }
+
+    const { inputHolder, computationResult } = this.state;
+
     switch(inputHolder[1]) {
       case('+'):
       default:
@@ -104,17 +114,17 @@ class Calculator extends Component {
     this.setState(() => {
       return {
         signClicked: true,
-        // onScreenInput: operationResult,
-        computationResult: operationResult
+        computationResult: operationResult,
       }
-    })
+    });
   }
 
   handleEqualitySignPress = async (event) => {
-    await this.makeComputation();
+    event.persist();
+    await this.setState(() => ({ equalitySignHasBeenPressed: true }))
+    await this.makeComputation(event.target.innerHTML);
     const { inputHolder, computationResult } = this.state;
     inputHolder[0] = computationResult;
-    // inputHolder[2] = 0;
     this.setState((state) => ({
       onScreenInput: state.computationResult,
       inputHolder,
