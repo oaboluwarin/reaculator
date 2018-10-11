@@ -20,8 +20,12 @@ class Calculator extends Component {
     event.persist();
 
     let inputValue = event.target.value || event.target.innerHTML;
+
     if (event.target.innerHTML) {
       if (!isNaN(inputValue)) {
+        if(this.state.equalitySignHasBeenPressed) {
+          this.resetInput();
+        }
         const signClickedValue = this.state.onScreenInput + inputValue;
         this.handleSignClicked(signClickedValue, inputValue);
       }
@@ -40,6 +44,9 @@ class Calculator extends Component {
 
     if (event.target.value) {
       if (!isNaN(inputValue)) {
+        if(this.state.equalitySignHasBeenPressed) {
+          this.resetInput();
+        }
         this.handleSignClicked(inputValue, inputValue.slice(-1));
       } else {
         this.keepValues(inputValue);
@@ -89,6 +96,7 @@ class Calculator extends Component {
       } else if (operatorIsBasic(currentOperator)) {
         inputHolder[2] = 0;
       }
+      inputHolder[1] = currentOperator;
       this.setState(() => ({ inputHolder }))
     }
 
