@@ -12,22 +12,26 @@ const initialState = {
 const valueIsOperator = value => /^[-+÷*x\/]$/.test(value); // eslint-disable-line
 const operatorIsMultDiv = value => /^[÷*x\/]$/.test(value); // eslint-disable-line
 const operatorIsBasic = value => /^[+-]$/.test(value); // eslint-disable-line
+const keyboardOperator = value => /^[-+÷*\/]$/.test(value); // eslint-disable-line
 
 class Calculator extends Component {
   state = {...initialState}
 
-  handleInputChange = (event) => {
+  handleInputChange = async (event) => {
     event.persist();
-
     let inputValue = event.target.value || event.target.innerHTML;
 
     if (event.target.innerHTML) {
       if (!isNaN(inputValue)) {
-        const signClickedValue = this.state.onScreenInput + inputValue;
-        this.handleSignClicked(signClickedValue, inputValue);
+        const inputDisplayed = this.state.onScreenInput + inputValue;
+
+        const { signClicked } = this.state;
+        const onDisplay = signClicked ? inputValue : inputDisplayed;
+        this.keepValues(onDisplay);
+        this.setDisplayedScreenInput(onDisplay);
       }
       else {
-        this.makeComputation(event.target.innerHTML);
+        await this.makeComputation(event.target.innerHTML);
         this.keepValues(inputValue);
         const { inputHolder, computationResult } = this.state;
         inputHolder[0] = computationResult;
@@ -40,40 +44,38 @@ class Calculator extends Component {
     }
 
     if (event.target.value) {
-      if (!isNaN(inputValue)) {
-        this.handleSignClicked(inputValue, inputValue.slice(-1));
+      const keyboardInputValue = isNaN(inputValue) ? inputValue.slice(-1) : inputValue;
+      if (isNaN(inputValue) && keyboardOperator(keyboardInputValue)) {
+        this.handleSignClicked(keyboardInputValue, keyboardInputValue);
       } else {
-        this.keepValues(inputValue);
-        this.handleEqualitySignPress()
+        this.keepValues(keyboardInputValue);
       }
     } else if (event.target.value === '') {
       this.resetInput();
     }
+    console.log(this.state.inputHolder)
   }
 
-  handleSignClicked = (signClickedValue, inputValue) => {
+  setDisplayedScreenInput = value => this.setState(() => ({ onScreenInput: Number(value)}));
+
+  handleSignClicked = (valueOnScreen, mostRecentCharacter) => {
+    // To remove
     const { signClicked } = this.state;
-    if (!signClicked) {
-      this.keepValues(signClickedValue);
-      this.setState(() => ({
-        onScreenInput: Number(signClickedValue),
-      }))
-    }
     if (signClicked) {
-      this.keepValues(inputValue);
+      this.keepValues(mostRecentCharacter);
       this.setState(() => ({
-        onScreenInput: Number(inputValue),
+        onScreenInput: Number(mostRecentCharacter),
         signClicked: false
       }))
     }
   }
 
-  keepValues = (value) => {
+  keepValues = value => {
     const { inputHolder, computationResult } = this.state;
     inputHolder[0] = computationResult;
-    const lastCharacterOfValue = value.slice(-1);
-    if (valueIsOperator(lastCharacterOfValue)) {
-      inputHolder[1] = lastCharacterOfValue;
+    const mostRecentCharacter = value.slice(-1);
+    if (valueIsOperator(mostRecentCharacter)) {
+      inputHolder[1] = mostRecentCharacter;
     }
     if(!isNaN(value)) {
       inputHolder[2] = Number(value);
@@ -115,6 +117,7 @@ class Calculator extends Component {
         operationResult = Number(inputHolder[2]);
         break;
     }
+    console.log('===========', operationResult)
     this.setState(() => {
       return {
         signClicked: true,
