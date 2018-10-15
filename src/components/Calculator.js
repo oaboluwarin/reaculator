@@ -15,7 +15,7 @@ const operatorIsBasic = value => /^[+-]$/.test(value); // eslint-disable-line
 const keyboardOperator = value => /^[-+÷*\/]$/.test(value); // eslint-disable-line
 
 class Calculator extends Component {
-  state = {...initialState}
+  state = { ...initialState }
 
   handleInputChange = async (event) => {
     event.persist();
@@ -23,11 +23,11 @@ class Calculator extends Component {
 
     if (event.target.innerHTML) {
       if (!isNaN(inputValue)) {
-        const inputDisplayed = this.state.onScreenInput + inputValue;
-
-        const { signClicked } = this.state;
+        const { equalitySignHasBeenPressed, onScreenInput, signClicked } = this.state;
+        const inputDisplayed = onScreenInput + inputValue;
         const onDisplay = signClicked ? inputValue : inputDisplayed;
         this.keepValues(onDisplay);
+        if (equalitySignHasBeenPressed) await this.setState(() => (initialState));
         this.setDisplayedScreenInput(onDisplay);
       }
       else {
@@ -38,33 +38,37 @@ class Calculator extends Component {
         operatorIsBasic(inputValue) ? inputHolder[2] = 0 : inputHolder[2] = 1;
         this.setState((state) => ({
           onScreenInput: state.computationResult,
-          inputHolder
+          inputHolder,
+          equalitySignHasBeenPressed: false
         }))
+        console.log(this.state.inputHolder);
       }
     }
 
     if (event.target.value) {
       const keyboardInputValue = isNaN(inputValue) ? inputValue.slice(-1) : inputValue;
       if (isNaN(inputValue) && keyboardOperator(keyboardInputValue)) {
-        this.handleSignClicked(keyboardInputValue, keyboardInputValue);
+        this.handleSignClicked(keyboardInputValue);
       } else {
         this.keepValues(keyboardInputValue);
+        this.setDisplayedScreenInput(keyboardInputValue);
+        await this.makeComputation(keyboardInputValue);
       }
     } else if (event.target.value === '') {
       this.resetInput();
     }
-    console.log(this.state.inputHolder)
+    // console.log(this.state.inputHolder)
   }
 
-  setDisplayedScreenInput = value => this.setState(() => ({ onScreenInput: Number(value)}));
+  setDisplayedScreenInput = value => this.setState(() => ({ onScreenInput: Number(value) }));
 
-  handleSignClicked = (valueOnScreen, mostRecentCharacter) => {
+  handleSignClicked = (mostRecentCharacter) => {
     // To remove
     const { signClicked } = this.state;
+    console.log(signClicked, mostRecentCharacter);
     if (signClicked) {
       this.keepValues(mostRecentCharacter);
       this.setState(() => ({
-        onScreenInput: Number(mostRecentCharacter),
         signClicked: false
       }))
     }
@@ -77,7 +81,7 @@ class Calculator extends Component {
     if (valueIsOperator(mostRecentCharacter)) {
       inputHolder[1] = mostRecentCharacter;
     }
-    if(!isNaN(value)) {
+    if (!isNaN(value)) {
       inputHolder[2] = Number(value);
     }
     this.setState(() => ({ inputHolder }));
@@ -98,26 +102,26 @@ class Calculator extends Component {
 
     const { inputHolder, computationResult } = this.state;
 
-    switch(inputHolder[1]) {
-      case('+'):
+    switch (inputHolder[1]) {
+      case ('+'):
         operationResult = Number(computationResult) + Number(inputHolder[2]);
         break;
-      case('-'):
+      case ('-'):
         computationResult ? operationResult = Number(computationResult) - Number(inputHolder[2]) : operationResult = Number(inputHolder[2]);
         break;
-      case('/'):
-      case('÷'):
+      case ('/'):
+      case ('÷'):
         computationResult ? operationResult = Number(computationResult) / Number(inputHolder[2]) : operationResult = Number(inputHolder[2]);
         break;
-      case('*'):
-      case('x'):
+      case ('*'):
+      case ('x'):
         computationResult ? operationResult = Number(computationResult) * Number(inputHolder[2]) : operationResult = Number(inputHolder[2]);
         break;
       default:
         operationResult = Number(inputHolder[2]);
         break;
     }
-    console.log('===========', operationResult)
+    // console.log('===========', operationResult)
     this.setState(() => {
       return {
         signClicked: true,
@@ -132,6 +136,7 @@ class Calculator extends Component {
     await this.makeComputation(event.target.innerHTML);
     const { inputHolder, computationResult } = this.state;
     inputHolder[0] = computationResult;
+    // console.log(inputHolder);
     this.setState((state) => ({
       onScreenInput: state.computationResult,
       inputHolder,
